@@ -46,7 +46,7 @@
 	<key>createdby</key>
 	<string>manavortex</string>
 	<key>description</key>
-	<string></string>
+	<string>Search a fandom wiki of your choice</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
@@ -223,6 +223,10 @@
 			<integer>300</integer>
 		</dict>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.0.0</string>
 	<key>webaddress</key>
 	<string>https://www.github.com/manavortex/alfred-fandom-search</string>
 </dict>
