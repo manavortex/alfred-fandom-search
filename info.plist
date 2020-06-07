@@ -6,19 +6,6 @@
 	<string>com.manavortex.fandom</string>
 	<key>connections</key>
 	<dict>
-		<key>1E3A0768-A740-4817-9926-45482904F9FA</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>1D687A9D-E0B2-405F-9D09-7163F8D2C169</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>C7A29E7B-8D4F-41EE-A36B-5646031010D3</key>
 		<array>
 			<dict>
@@ -56,50 +43,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
-				<integer>0</integer>
-				<key>keyword</key>
-				<string>fandom set</string>
-				<key>subtext</key>
-				<string>THIS.fandom.com</string>
-				<key>text</key>
-				<string>set default wiki</string>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>1E3A0768-A740-4817-9926-45482904F9FA</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string></string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string>00_savesettings.py</string>
-				<key>type</key>
-				<integer>8</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>1D687A9D-E0B2-405F-9D09-7163F8D2C169</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>autopaste</key>
 				<false/>
 				<key>clipboardtext</key>
@@ -128,7 +71,7 @@
 				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>escaping</key>
-				<integer>0</integer>
+				<integer>68</integer>
 				<key>keyword</key>
 				<string>da</string>
 				<key>queuedelaycustom</key>
@@ -142,7 +85,82 @@
 				<key>runningsubtext</key>
 				<string>fetching data...</string>
 				<key>script</key>
-				<string></string>
+				<string>#!/usr/bin/python
+# encoding: utf-8
+
+import sys 
+import requests 
+import urllib3
+from urllib import quote
+from workflow import (Workflow3, ICON_INFO, ICON_WARNING, ICON_ERROR, ICON_WEB,
+                      ICON_SETTINGS, ICON_SYNC)
+from bs4 import BeautifulSoup
+
+# change this to the name of the wiki you want to query, e.g. 'lyrics', 'witcher'...
+DEFAULT_WIKI = "dragonage"
+
+
+# do not change this
+DEFAULT_URL = "https://%s.fandom.com/api/v1/Search/List"
+
+class AlfredFandomSearch(object):
+    """Workflow controller."""
+    
+    def __init__(self):
+        self.wf = Workflow3(update_settings={'github_slug': 'manavortex/alfred-fandom-search'})
+
+    def search(self):
+        S = requests.Session()
+        PARAMS = {
+            "action": sys.argv[1],
+            "format": "json",
+            "limit": "10",
+            "batches": "1",
+            "minArticleQuality": "5", 
+            "namespace": "0%2C14",
+            "query": self.query
+        }
+
+        R = S.get(url=self.url, params=PARAMS)
+        return R.json()["items"]
+
+    def run(self, wf):
+        """Run workflow."""
+        
+        args = self.wf.args # check for magic args
+        searchResults = {}
+
+        try: 
+            query = self.wf.decode(args[0])            
+            self.query = quote(query)
+            self.url = DEFAULT_URL % DEFAULT_WIKI
+            searchResults = self.search()
+        except IndexError: 
+            searchResults = {}      
+        
+        for result in searchResults:
+
+            title=result["title"]
+            soup = BeautifulSoup(result["snippet"])
+            snipText = (soup.get_text()[:75] + "..")            
+            subtitle=snipText
+            
+            url=result["url"]
+            self.wf.add_item(
+                title, 
+                subtitle=subtitle,
+                arg=url,                 
+                valid=True
+            )#, icon=header_image_url, icontype='path')
+            
+        self.wf.send_feedback()
+        
+
+if __name__ == '__main__':
+
+    search = AlfredFandomSearch()
+    sys.exit(search.run(search.wf.run))
+</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -152,7 +170,7 @@
 				<key>title</key>
 				<string>&lt;query&gt;</string>
 				<key>type</key>
-				<integer>8</integer>
+				<integer>3</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
@@ -187,20 +205,6 @@
 	<string></string>
 	<key>uidata</key>
 	<dict>
-		<key>1D687A9D-E0B2-405F-9D09-7163F8D2C169</key>
-		<dict>
-			<key>xpos</key>
-			<integer>370</integer>
-			<key>ypos</key>
-			<integer>30</integer>
-		</dict>
-		<key>1E3A0768-A740-4817-9926-45482904F9FA</key>
-		<dict>
-			<key>xpos</key>
-			<integer>35</integer>
-			<key>ypos</key>
-			<integer>30</integer>
-		</dict>
 		<key>A7F2C6FD-53EC-43E6-9739-AFD2863AFE3F</key>
 		<dict>
 			<key>xpos</key>
@@ -226,7 +230,7 @@
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>1.0.0</string>
+	<string>1.1.0</string>
 	<key>webaddress</key>
 	<string>https://www.github.com/manavortex/alfred-fandom-search</string>
 </dict>
