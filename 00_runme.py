@@ -4,13 +4,17 @@
 import sys 
 import requests 
 import urllib3
+import json
 from urllib import quote
 from workflow import (Workflow3, ICON_INFO, ICON_WARNING, ICON_ERROR, ICON_WEB,
                       ICON_SETTINGS, ICON_SYNC)
 from bs4 import BeautifulSoup
 
+# change this to the name of the wiki you want to query, e.g. 'lyrics', 'witcher'...
+DEFAULT_WIKI = ""
 
 
+# do not change this
 DEFAULT_URL = "https://%s.fandom.com/api/v1/Search/List"
 
 class AlfredFandomSearch(object):
@@ -19,19 +23,10 @@ class AlfredFandomSearch(object):
     def __init__(self):
         self.wf = Workflow3(update_settings={'github_slug': 'manavortex/alfred-fandom-search'})
 
-    def getUrl(self):  
-        if not self.wf.settings or not self.wf.settings[u'url']:            
-            return ""
-        return self.wf.settings[u'url']
-
     def search(self):
-        if self.url == "": 
-            self.wf.add_item("Set default wiki", subtitle="call fandomset <yourwiki>")#, icon=header_image_url, icontype='path')
-            return {}
-
         S = requests.Session()
         PARAMS = {
-            "action": "query",
+            "action": sys.argv[1],
             "format": "json",
             "limit": "10",
             "batches": "1",
@@ -47,15 +42,25 @@ class AlfredFandomSearch(object):
         """Run workflow."""
         
         args = self.wf.args # check for magic args
-        searchResults = {}
+        
+        if DEFAULT_WIKI == "": 
+            self.wf.add_item(
+                "Error: DEFAULT_URL in script filter not set", 
+                subtitle="press enter to see readme", 
+                arg="https://github.com/manavortex/alfred-fandom-search/blob/master/README.md", 
+                valid=True
+            )
+            self.wf.send_feedback()
+            return
 
+        searchResults = {}
         try: 
             query = self.wf.decode(args[0])            
             self.query = quote(query)
-            self.url = DEFAULT_URL % self.getUrl()
+            self.url = DEFAULT_URL % DEFAULT_WIKI
             searchResults = self.search()
         except IndexError: 
-            searchResults = {}      
+            searchResults = {}
         
         for result in searchResults:
 
@@ -74,6 +79,7 @@ class AlfredFandomSearch(object):
             
         self.wf.send_feedback()
         
+
 
 if __name__ == '__main__':
 
