@@ -10,11 +10,15 @@ from workflow import (Workflow3, ICON_INFO, ICON_WARNING, ICON_ERROR, ICON_WEB,
                       ICON_SETTINGS, ICON_SYNC)
 from bs4 import BeautifulSoup
 
+# =================================================================================== #
 # change this to the name of the wiki you want to query, e.g. 'lyrics', 'witcher'...
-DEFAULT_WIKI = ""
+DEFAULT_WIKI = "dragonage"
+# =================================================================================== #
 
 
-# do not change this
+# =================================================================================== #
+# DO NOT CHANGE BELOW THIS LINE UNLESS YOU KNOW WHAT YOU'RE DOING :)
+# =================================================================================== #
 DEFAULT_URL = "https://%s.fandom.com/api/v1/Search/List"
 
 class AlfredFandomSearch(object):
@@ -36,7 +40,10 @@ class AlfredFandomSearch(object):
         }
 
         R = S.get(url=self.url, params=PARAMS)
-        return R.json()["items"]
+        try:
+            return R.json()["items"]
+        except:
+            return []
 
     def run(self, wf):
         """Run workflow."""
@@ -45,7 +52,7 @@ class AlfredFandomSearch(object):
         
         if DEFAULT_WIKI == "": 
             self.wf.add_item(
-                "Error: DEFAULT_WIKI in script filter not set", 
+                "Error: DEFAULT_URL in script filter not set", 
                 subtitle="press enter to see readme", 
                 arg="https://github.com/manavortex/alfred-fandom-search/blob/master/README.md", 
                 valid=True

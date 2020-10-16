@@ -66,6 +66,25 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>autopaste</key>
+				<false/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>A7F2C6FD-53EC-43E6-9739-AFD2863AFE3F</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -101,6 +120,7 @@ from urllib import quote
 from workflow import (Workflow3, ICON_INFO, ICON_WARNING, ICON_ERROR, ICON_WEB,
                       ICON_SETTINGS, ICON_SYNC)
 from bs4 import BeautifulSoup
+
 
 # change this to the name of the wiki you want to query, e.g. 'lyrics', 'witcher'...
 DEFAULT_WIKI = ""
@@ -201,23 +221,6 @@ if __name__ == '__main__':
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>autopaste</key>
-				<false/>
-				<key>clipboardtext</key>
-				<string>{query}</string>
-				<key>transient</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.clipboard</string>
-			<key>uid</key>
-			<string>A7F2C6FD-53EC-43E6-9739-AFD2863AFE3F</string>
-			<key>version</key>
-			<integer>3</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>browser</key>
 				<string></string>
 				<key>spaces</key>
@@ -250,7 +253,7 @@ if __name__ == '__main__':
 				<key>escaping</key>
 				<integer>68</integer>
 				<key>keyword</key>
-				<string>dragonage</string>
+				<string>da</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -304,7 +307,10 @@ class AlfredFandomSearch(object):
         }
 
         R = S.get(url=self.url, params=PARAMS)
-        return R.json()["items"]
+        try:
+            return R.json()["items"]
+        except:
+            return []
 
     def run(self, wf):
         """Run workflow."""
@@ -363,7 +369,7 @@ if __name__ == '__main__':
 				<key>title</key>
 				<string>&lt;query&gt;</string>
 				<key>type</key>
-				<integer>3</integer>
+				<integer>8</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
@@ -393,7 +399,7 @@ if __name__ == '__main__':
 			<key>xpos</key>
 			<integer>360</integer>
 			<key>ypos</key>
-			<integer>150</integer>
+			<integer>145</integer>
 		</dict>
 		<key>C7A29E7B-8D4F-41EE-A36B-5646031010D3</key>
 		<dict>
